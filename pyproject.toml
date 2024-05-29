@@ -32,6 +32,7 @@ pydantic = "^2.7.1"
 flask-login = "^0.6.3"
 mysql-connector-python = "^8.4.0"
 flask-migrate = "^4.0.7"
+waitress = "^3.0.0"
 
 
 [build-system]
