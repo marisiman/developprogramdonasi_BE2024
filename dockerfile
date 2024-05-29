@@ -1,22 +1,45 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12
+# Menggunakan image resmi Python slim dengan versi 3.12.1
+FROM python:3.12.1-slim
 
-# Set the working directory in the container
-WORKDIR /
+# Argument yang dapat diatur saat membangun image
+ARG FLASK_DEBUG
+ARG FLASK_ENV
+ARG DATABASE_TYPE
+ARG DATABASE_NAME
+ARG DATABASE_HOST
+ARG DATABASE_PORT
+ARG DATABASE_USER
+ARG DATABASE_PASSWORD
 
-# Copy the current directory contents into the container at /app
-COPY . /
+# Menginstal dependensi yang diperlukan untuk psycopg2 (PostgreSQL)
+RUN apt-get update && apt-get install -y \
+       libpq-dev \
+       gcc \
+       && rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Menginstal poetry (manajer dependensi)
+RUN pip3 install poetry
 
-# Make port 8000 available to the world outside this container
-EXPOSE 8000
+# Mengatur variabel lingkungan untuk poetry
+ENV POETRY_NO_INTERACTION=1 \
+       POETRY_VIRTUALENVS_IN_PROJECT=1 \
+       POETRY_VIRTUALENVS_CREATE=1 \
+       POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Define environment variable
-ENV FLASK_APP main.py
-ENV FLASK_DEBUG true
-ENV FLASK_ENV development
+# Mengatur direktori kerja di dalam container
+WORKDIR /app
 
-# Run main.py when the container launches
-CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000"]
+# Menyalin file pyproject.toml dan poetry.lock* ke dalam container
+COPY pyproject.toml poetry.lock* /app/
+
+# Menginstal dependensi menggunakan Poetry
+RUN poetry install
+
+# Menyalin seluruh konten dari direktori proyek ke dalam container
+COPY . /app
+
+# Melakukan migrasi database (asumsi menggunakan Flask-Migrate)
+RUN poetry run flask db upgrade
+
+# Menentukan perintah default untuk menjalankan aplikasi
+CMD ["/app/.venv/bin/gunicorn", "-w 4", "-b 0.0.0.0:5000", "app:app"]
