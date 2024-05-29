@@ -1,5 +1,5 @@
 # Menggunakan image resmi Python slim dengan versi 3.12.1
-FROM python:3.12.1-slim
+FROM python:3.8
 
 # Argument yang dapat diatur saat membangun image
 ARG FLASK_DEBUG
