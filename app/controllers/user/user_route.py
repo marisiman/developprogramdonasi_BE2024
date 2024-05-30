@@ -214,80 +214,80 @@ def update_profile():
 
 # ->>--->>----->>>>>--ADMIN(Admin Only)-- ACCESS-->>--->>--->>>ADMIN(Admin Only)-- ACCESS----->>>----->>---->>>>>>
 
-@user_blueprint.route('/admin/register', methods=["POST"])
-def create_user_admin():
-    data = request.get_json()
+# @user_blueprint.route('/admin/register', methods=["POST"])
+# def create_user_admin():
+#     data = request.get_json()
 
-    required_fields = ['email', 'name', 'role', 'password']
-    if not all(field in data for field in required_fields):
-        return api_response(
-            status_code=400,
-            message='Missing required fields',
-            data={}
-        )
+#     required_fields = ['email', 'name', 'role', 'password']
+#     if not all(field in data for field in required_fields):
+#         return api_response(
+#             status_code=400,
+#             message='Missing required fields',
+#             data={}
+#         )
 
-    email = data['email']
-    name = data['name']
-    role = data['role']
-    password = data['password']
+#     email = data['email']
+#     name = data['name']
+#     role = data['role']
+#     password = data['password']
 
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    if not re.match(email_regex, email):
-        return api_response(
-            status_code=400,
-            message='Invalid email format',
-            data={}
-        )
+#     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+#     if not re.match(email_regex, email):
+#         return api_response(
+#             status_code=400,
+#             message='Invalid email format',
+#             data={}
+#         )
 
-    if len(password) < 8:
-        return api_response(
-            status_code=400,
-            message='Password must be at least 8 characters long',
-            data={}
-        )
+#     if len(password) < 8:
+#         return api_response(
+#             status_code=400,
+#             message='Password must be at least 8 characters long',
+#             data={}
+#         )
 
-    try:
-        user_exists = User.query.filter_by(email=email).first()
-        if user_exists:
-            return api_response(
-                status_code=400,
-                message='User already registered',
-                data={}
-            )
+#     try:
+#         user_exists = User.query.filter_by(email=email).first()
+#         if user_exists:
+#             return api_response(
+#                 status_code=400,
+#                 message='User already registered',
+#                 data={}
+#             )
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+#         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        new_user = User(
-            email=email,
-            name=name,
-            role=role,
-            password=hashed_password
-        )
-        db.session.add(new_user)
-        db.session.commit()
+#         new_user = User(
+#             email=email,
+#             name=name,
+#             role=role,
+#             password=hashed_password
+#         )
+#         db.session.add(new_user)
+#         db.session.commit()
 
-        # Returning registration data
-        registration_admin = {
-            'id': new_user.id,
-            'email': new_user.email,
-            'name': new_user.name,
-            'role': new_user.role,
-            'created_at': new_user.created_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.created_at else None,
-            'updated_at': new_user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.updated_at else None
-        }
+#         # Returning registration data
+#         registration_admin = {
+#             'id': new_user.id,
+#             'email': new_user.email,
+#             'name': new_user.name,
+#             'role': new_user.role,
+#             'created_at': new_user.created_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.created_at else None,
+#             'updated_at': new_user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.updated_at else None
+#         }
 
-        return api_response(
-            status_code=201,
-            message='User successfully added',
-            data={'data added': registration_admin}
-        )
-    except Exception as e:
-        db.session.rollback()
-        return api_response(
-            status_code=500,
-            message='Failed to add user',
-            data={'error': str(e)}
-        )    
+#         return api_response(
+#             status_code=201,
+#             message='User successfully added',
+#             data={'data added': registration_admin}
+#         )
+#     except Exception as e:
+#         db.session.rollback()
+#         return api_response(
+#             status_code=500,
+#             message='Failed to add user',
+#             data={'error': str(e)}
+#         )    
 
 @user_blueprint.route('/admin/login', methods=["POST"])
 def login_user_admin():
@@ -317,38 +317,38 @@ def login_user_admin():
             data={'error': str(e)}
         )
     
-@user_blueprint.route('/admin/users', methods=["GET"])
-@jwt_required()
-@role_required('admin')
-def all_user_register():
-    try:
-        users = User.query.all()
-        users_data = []
-        for user in users:
-            user_data = {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'password': user.password,
-                'role': user.role,
-                'created_at': user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                'updated_at': user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if user.updated_at else None
-            }
-            users_data.append(user_data)
+# @user_blueprint.route('/admin/users', methods=["GET"])
+# @jwt_required()
+# @role_required('admin')
+# def all_user_register():
+#     try:
+#         users = User.query.all()
+#         users_data = []
+#         for user in users:
+#             user_data = {
+#                 'id': user.id,
+#                 'email': user.email,
+#                 'name': user.name,
+#                 'password': user.password,
+#                 'role': user.role,
+#                 'created_at': user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+#                 'updated_at': user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if user.updated_at else None
+#             }
+#             users_data.append(user_data)
 
-        # return jsonify(users_data), 200
-        return api_response(
-            status_code=200,
-            message='User-Admin successfully access list all users',
-            data={'list_users': users_data}
-        )
+#         # return jsonify(users_data), 200
+#         return api_response(
+#             status_code=200,
+#             message='User-Admin successfully access list all users',
+#             data={'list_users': users_data}
+#         )
     
-    except SQLAlchemyError as e:
-        # return jsonify({'error': 'Failed to fetch user data', 'message': str(e)}), 500
-        return api_response(
-            status_code=500,
-            message='Failed to fetch user data',
-            data={'error': str(e)}
-        )
+#     except SQLAlchemyError as e:
+#         # return jsonify({'error': 'Failed to fetch user data', 'message': str(e)}), 500
+#         return api_response(
+#             status_code=500,
+#             message='Failed to fetch user data',
+#             data={'error': str(e)}
+#         )
 # ------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>
 
