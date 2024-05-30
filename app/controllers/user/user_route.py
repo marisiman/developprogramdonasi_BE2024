@@ -289,33 +289,33 @@ def update_profile():
 #             data={'error': str(e)}
 #         )    
 
-@user_blueprint.route('/admin/login', methods=["POST"])
-def login_user_admin():
-    data = request.get_json()
+# @user_blueprint.route('/admin/login', methods=["POST"])
+# def login_user_admin():
+#     data = request.get_json()
 
-    try:
-        # Checking if the user is registered
-        user = User.query.filter_by(email=data['email']).first()
-        if user and check_password_hash(user.password, data['password']):
-            # Creating JWT token
-            access_token = create_access_token(identity=user.id)
-            return api_response(
-                status_code=200,
-                message='User-Admin login successful',
-                data={'access_token': access_token}
-            )
-        else:
-            return api_response(
-                status_code=401,
-                message='Incorrect email or password',
-                data={}
-            )
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message='Failed during login',
-            data={'error': str(e)}
-        )
+#     try:
+#         # Checking if the user is registered
+#         user = User.query.filter_by(email=data['email']).first()
+#         if user and check_password_hash(user.password, data['password']):
+#             # Creating JWT token
+#             access_token = create_access_token(identity=user.id)
+#             return api_response(
+#                 status_code=200,
+#                 message='User-Admin login successful',
+#                 data={'access_token': access_token}
+#             )
+#         else:
+#             return api_response(
+#                 status_code=401,
+#                 message='Incorrect email or password',
+#                 data={}
+#             )
+#     except Exception as e:
+#         return api_response(
+#             status_code=500,
+#             message='Failed during login',
+#             data={'error': str(e)}
+#         )
     
 # @user_blueprint.route('/admin/users', methods=["GET"])
 # @jwt_required()
