@@ -105,3 +105,144 @@ def only_userlogin_program():
             data={}
         )  
 
+
+# --->>>--TRIAL TEMPLATE ADMIN-ACCESS--->>>--ADMIN--ACCESS--->>>>
+
+# GET: List all programs
+@program_blueprint.route('/admin/list-programs', methods=["GET"])
+@jwt_required()
+@role_required('admin')
+def all_list_programs():
+    try:
+        # Mengambil semua program dari database
+        programs = Program.query.all()
+
+        # Mengonversi data program ke format JSON
+        programs_data = [program.serialize() for program in programs]
+
+        # Mengembalikan data program sebagai JSON
+        return api_response(
+            status_code=200,
+            message='User-Admin successfully accessed list of all programs',
+            data={'programs': programs_data}
+        )
+
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message='Failed to fetch program data',
+            data={'error': str(e)}
+        )
+    
+# GET: Get a specific program by ID
+@program_blueprint.route('/admin/<int:program_id>', methods=['GET'])
+@jwt_required()
+@role_required('admin')
+def get_program(program_id):
+    try:
+        program = Program.query.get(program_id)
+        if program:
+            return api_response(
+                status_code=200,
+                message="Daftar data dari id program berhasil ditampilkan",
+                data=[program.serialize()]
+            )  
+        else:
+            return api_response(
+                status_code=400,
+                message="Data program tidak ditemukan",
+                data={}
+            )  
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        ) 
+
+# PUT: Update a specific program by ID
+@program_blueprint.route('/admin/<int:program_id>', methods=['PUT'])
+@jwt_required()
+@role_required('admin')
+def update_program(program_id):
+    try:
+        data = request.json
+        update_program_request = Update_program_request(**data)
+        print(update_program_request)
+
+        program_service = Program_service()
+        programs = program_service.update_program(program_id, update_program_request)
+
+        return api_response(
+            status_code=200,
+            message="succes update program data",
+            data=programs
+        ) 
+    except ValidationError as e:
+        return api_response(
+            status_code=400,
+            message=e.errors(),
+            data={}
+        )     
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        )   
+
+# DELETE: Delete a specific program by ID
+@program_blueprint.route('/admin/<int:program_id>', methods=['DELETE'])
+@jwt_required()
+@role_required('admin')
+def delete_program(program_id):
+    try:
+        program_service = Program_service()
+        program = program_service.delete_program(program_id)
+
+        if program == "Program not available":
+            return api_response(
+            status_code=404,
+            message=program,
+            data={}
+        )
+        return api_response(
+            status_code=200,
+            message="Data program donasi berhasil dihapus",
+            data=program
+        )        
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        ) 
+
+# GET: Search for programs by name    
+@program_blueprint.route('/admin/search', methods=['GET'])
+@jwt_required()
+@role_required('admin')
+def search_programs():
+    try:
+        request_data = request.args
+        program_service = Program_service()
+        programs = program_service.search_programs(request_data['name'])
+        
+        if programs:
+            return api_response(
+                status_code=200,
+                message="Daftar data program donasi yang dicari sukses diakses",
+                data=programs
+            )  
+        else:
+            return api_response(
+                status_code=400,
+                message="Data program donasi yang dicari tidak ditemukan",
+                data={}
+            )   
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        )       

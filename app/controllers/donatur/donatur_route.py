@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 donatur_blueprint = Blueprint('donatur_endpoint', __name__)
 
+# POST: Create a new donatur
 @donatur_blueprint.route('/', methods=['POST'])
 @jwt_required() 
 def create_donatur():
@@ -32,7 +33,7 @@ def create_donatur():
                 }
             )  
         
-                # Mendapatkan identitas pengguna yang saat ini login dari token JWT
+        # Mendapatkan identitas pengguna yang saat ini login dari token JWT
         current_user_id = get_jwt_identity()
 
         # Querying untuk mendapatkan data pengguna yang saat ini login
@@ -70,12 +71,11 @@ def create_donatur():
             data={}
         )       
 
-
+# GET: Get donatur data of the current user
 @donatur_blueprint.route('/list_identitasku', methods=['GET'])
-@jwt_required()  # Membutuhkan token JWT untuk akses
+@jwt_required()  
 def get_donaturku():
     try:
-
         # Mendapatkan identitas pengguna yang saat ini login dari token JWT
         current_user_id = get_jwt_identity()
 
@@ -114,3 +114,112 @@ def get_donaturku():
             data={}
         )       
 
+# GET: Search donaturs by name
+@donatur_blueprint.route('/search', methods=['GET'])
+@jwt_required()
+def search_donaturs():
+    try:
+        request_data = request.args
+        
+        donatur_service = Donatur_service()
+        donaturs = donatur_service.search_donaturs(request_data['nama'])
+        
+        if donaturs:
+            return api_response(
+                status_code=200,
+                message="Data donatur yang dicari sukses diakses",
+                data=donaturs
+            )  
+        else:
+            return api_response(
+                status_code=400,
+                message="Data donatur yang dicari tidak ditemukan",
+                data={}
+            )   
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        )       
+
+# GET: Get a specific donatur by ID
+@donatur_blueprint.route('//<int:donatur_id>', methods=['GET'])
+@jwt_required()
+def get_donatur(donatur_id):
+    try:
+        donatur = Donatur.query.get(donatur_id)
+        if donatur:
+            return api_response(
+                status_code=200,
+                message="Data donatur dari id berhasil ditampilkan",
+                data=[donatur.serialize()]
+            )  
+        else:
+            return api_response(
+                status_code=400,
+                message="Data donatur dari id tidak ditemukan",
+                data={}
+            )  
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        )   
+
+# PUT: Update a specific donatur by ID    
+@donatur_blueprint.route('//<int:donatur_id>', methods=['PUT'])
+@jwt_required()
+def update_donatur(donatur_id):
+    try:
+        data = request.json
+        update_donatur_request = Update_donatur_request(**data)
+
+        donatur_service = Donatur_service()
+        donaturs = donatur_service.update_donatur(donatur_id, update_donatur_request)
+
+        return api_response(
+            status_code=200,
+            message="success update data",
+            data=donaturs
+        )    
+
+    except ValidationError as e:
+        return api_response(
+            status_code=400,
+            message=e.errors(),
+            data={}
+        )     
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        )   
+
+# DELETE: Delete a specific donatur by ID    
+@donatur_blueprint.route('//<int:donatur_id>', methods=['DELETE'])
+@jwt_required()
+def delete_donatur(donatur_id):
+    try:
+        donatur_service = Donatur_service()
+        donatur = donatur_service.delete_donatur(donatur_id)
+         
+        if donatur == "Donatur not available":
+            return api_response(
+                status_code=404,
+                message=donatur,
+                data={}
+            )
+        return api_response(
+            status_code=200,
+            message="Data donatur berhasil dihapus",
+            data=donatur
+        )
+    except Exception as e:
+        return api_response(
+            status_code=500,
+            message=str(e),
+            data={}
+        ) 
