@@ -198,25 +198,25 @@ def update_program(program_id):
 def delete_program(program_id):
     try:
         program_service = Program_service()
-        program = program_service.delete_program(program_id)
+        result = program_service.delete_program(program_id)
 
-        if program == "Program not available":
+        if result == "Program not available":
             return api_response(
-            status_code=404,
-            message=program,
-            data={}
-        )
+                status_code=404,
+                message=result,
+                data={}
+            )
         return api_response(
             status_code=200,
             message="Data program donasi berhasil dihapus",
-            data=program
-        )        
+            data=result
+        )
     except Exception as e:
         return api_response(
             status_code=500,
             message=str(e),
             data={}
-        ) 
+        )
 
 # GET: Search for programs by name    
 @program_blueprint.route('/admin/search', methods=['GET'])
