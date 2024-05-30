@@ -106,155 +106,6 @@ def only_userlogin_program():
         )  
 
 
-# --->>>--ADMIN-ACCESS--->>>--ADMIN--ACCESS--->>>>
-@program_blueprint.route('/admin/all', methods=['GET'])
-@jwt_required()
-@role_required('admin')
-def get_programs():
-    try:
-        
-        # Mendapatkan identitas pengguna yang saat ini login dari token JWT
-        current_user_id = get_jwt_identity()
-
-        # # Querying untuk mendapatkan data pengguna yang saat ini login
-        # user = User.query.filter_by(id=current_user_id).first()
-
-
-        program_service = Program_service()
-
-        programs = program_service.get_programs(current_user_id)
-        
-        # return programs
-        return api_response(
-            status_code = 200,
-            message ="Daftar semua program donasi sukses diakses",
-            data = programs
-        )
-        
-    except ValueError as ve:
-        return api_response(
-            status_code=404,
-            message=str(ve),
-            data={}
-        )
-    
-    except PermissionError as pe:
-        return api_response(
-            status_code=403,
-            message=str(pe),
-            data={}
-        )
-
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message=str(e),
-            data={}
-        )
-        
-@program_blueprint.route('/admin/<int:program_id>', methods=['GET'])
-def get_program(program_id):
-    try:
-        program = Program.query.get(program_id)
-        if program:
-            return api_response(
-                status_code=200,
-                message="Daftar data dari id karyawan berhasil ditampilkan",
-                data=[program.serialize()]
-            )  
-        else:
-            return api_response(
-                status_code=400,
-                message="Data karyawan tidak ditemukan",
-                data={}
-            )  
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message=str(e),
-            data={}
-        ) 
-
-@program_blueprint.route('/admin/<int:program_id>', methods=['PUT'])
-def update_program(program_id):
-    try:
-
-        data = request.json
-        update_program_request = Update_program_request(**data)
-        print(update_program_request)
-
-        program_service = Program_service()
-        programs = program_service.update_program(program_id, update_program_request)
-
-        return api_response(
-            status_code=200,
-            message="succes update program data",
-            data=programs
-        ) 
-    
-    except ValidationError as e:
-        return api_response(
-            status_code=400,
-            message=e.errors(),
-            data={}
-        )     
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message=str(e),
-            data={}
-        )   
-
-@program_blueprint.route('/admin/<int:program_id>', methods=['DELETE'])
-def delete_program(program_id):
-    try:
-        employe_service = Program_service()
-        program = employe_service.delete_program(program_id)
-        if program == "Program not available":
-            return api_response(
-            status_code=404,
-            message=program,
-            data={}
-        )
-        return api_response(
-            status_code=200,
-            message="Data program donasi berhasil dihapus",
-            data=program
-        )    
-        
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message=str(e),
-            data={}
-        ) 
-    
-@program_blueprint.route('/admin/search', methods=['GET'])
-def search_programs():
-    try:
-        request_data = request.args
-        
-        program_service = Program_service()
-        programs = program_service.search_programs(request_data['name'])
-        if programs:
-        # return [animal.as_dict() for animal in animals], 200
-            return api_response(
-                status_code=200,
-                message="Daftar data program donasi yang dicari sukses diakses",
-                data=programs
-            )  
-        else:
-            return api_response(
-                status_code=400,
-                message="Data program donasi yang dicari tidak ditemukan",
-                data={}
-            )   
-    except Exception as e:
-        return api_response(
-            status_code=500,
-            message=str(e),
-            data={}
-        )       
 
 # -------------------------trial admin access--->>>>>>
 
@@ -283,3 +134,111 @@ def all_list_programs():
             message='Failed to fetch program data',
             data={'error': str(e)}
         )
+    
+
+
+# --->>>--TRIAL TEMPLATE ADMIN-ACCESS--->>>--ADMIN--ACCESS--->>>>
+
+# @program_blueprint.route('/admin/<int:program_id>', methods=['GET'])
+# def get_program(program_id):
+#     try:
+#         program = Program.query.get(program_id)
+#         if program:
+#             return api_response(
+#                 status_code=200,
+#                 message="Daftar data dari id karyawan berhasil ditampilkan",
+#                 data=[program.serialize()]
+#             )  
+#         else:
+#             return api_response(
+#                 status_code=400,
+#                 message="Data karyawan tidak ditemukan",
+#                 data={}
+#             )  
+#     except Exception as e:
+#         return api_response(
+#             status_code=500,
+#             message=str(e),
+#             data={}
+#         ) 
+
+# @program_blueprint.route('/admin/<int:program_id>', methods=['PUT'])
+# def update_program(program_id):
+#     try:
+
+#         data = request.json
+#         update_program_request = Update_program_request(**data)
+#         print(update_program_request)
+
+#         program_service = Program_service()
+#         programs = program_service.update_program(program_id, update_program_request)
+
+#         return api_response(
+#             status_code=200,
+#             message="succes update program data",
+#             data=programs
+#         ) 
+    
+#     except ValidationError as e:
+#         return api_response(
+#             status_code=400,
+#             message=e.errors(),
+#             data={}
+#         )     
+#     except Exception as e:
+#         return api_response(
+#             status_code=500,
+#             message=str(e),
+#             data={}
+#         )   
+
+# @program_blueprint.route('/admin/<int:program_id>', methods=['DELETE'])
+# def delete_program(program_id):
+#     try:
+#         employe_service = Program_service()
+#         program = employe_service.delete_program(program_id)
+#         if program == "Program not available":
+#             return api_response(
+#             status_code=404,
+#             message=program,
+#             data={}
+#         )
+#         return api_response(
+#             status_code=200,
+#             message="Data program donasi berhasil dihapus",
+#             data=program
+#         )    
+        
+#     except Exception as e:
+#         return api_response(
+#             status_code=500,
+#             message=str(e),
+#             data={}
+#         ) 
+    
+# @program_blueprint.route('/admin/search', methods=['GET'])
+# def search_programs():
+#     try:
+#         request_data = request.args
+        
+#         program_service = Program_service()
+#         programs = program_service.search_programs(request_data['name'])
+#         if programs:
+#         # return [animal.as_dict() for animal in animals], 200
+#             return api_response(
+#                 status_code=200,
+#                 message="Daftar data program donasi yang dicari sukses diakses",
+#                 data=programs
+#             )  
+#         else:
+#             return api_response(
+#                 status_code=400,
+#                 message="Data program donasi yang dicari tidak ditemukan",
+#                 data={}
+#             )   
+#     except Exception as e:
+#         return api_response(
+#             status_code=500,
+#             message=str(e),
+#             data={}
+#         )       

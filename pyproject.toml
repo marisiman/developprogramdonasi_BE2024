@@ -33,6 +33,7 @@ flask-login = "^0.6.3"
 mysql-connector-python = "^8.4.0"
 flask-migrate = "^4.0.7"
 poetry-plugin-export = "^1.8.0"
+cryptography = "^42.0.7"
 
 
 [build-system]

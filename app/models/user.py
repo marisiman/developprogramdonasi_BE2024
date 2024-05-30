@@ -21,24 +21,27 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'<User {self.id}>'
 
-    def serialize(self, full=True):
-        if full:
-            return {
-                'id': self.id,
-                'email': self.email,
-                'name': self.name,
-                'password': self.password,
-                'role': self.role,
-                'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                'updated_at': self.updated_at.strftime("%Y-%m-%d %H:%M:%S")
-            }
-        else:
-            return {
-                'id': self.id,
-                'email': self.email,
-                'name': self.name,
-                'role': self.role
-            }
+def serialize(self, full=True):
+    if full:
+        data = {
+            'id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'password': self.password,
+            'role': self.role
+        }
+        if self.created_at:
+            data['created_at'] = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        if self.updated_at:
+            data['updated_at'] = self.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+        return data
+    else:
+        return {
+            'id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'role': self.role
+        }
     
     def set_password(self, password):
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

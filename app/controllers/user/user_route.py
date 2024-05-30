@@ -1,5 +1,5 @@
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, json, request, jsonify
 from flask_bcrypt import Bcrypt
 from app.decorators.role_checker import role_required
 from app.models.user import User, db
@@ -53,18 +53,39 @@ def create_user():
         new_user = User(
             email=email,
             name=name,
+            role='member',
             password=hashed_password
         )
+
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({'message': 'User successfully added'}), 201
+        # Returning registration data
+        registration_data = {
+            'id': new_user.id,
+            'email': new_user.email,
+            'name': new_user.name,
+            'role': new_user.role,
+            'created_at': new_user.created_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.created_at else None,
+            'updated_at': new_user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.updated_at else None
+        }
+
+        return api_response(
+            status_code=201,
+            message='User-data successfully added',
+            data={'user-data': registration_data}
+        )
+
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': 'Failed to add user', 'error': str(e)}), 500
+        return api_response(
+            status_code=500,
+            message='Failed to add user data',
+            data={'error': str(e)}
+        )
 
 
 # --->>>> Login Page --->>>>>
+
 @user_blueprint.route('/login', methods=["POST"])
 def login_user():
     data = request.get_json()
@@ -75,12 +96,23 @@ def login_user():
         if user and bcrypt.check_password_hash(user.password, data['password']):
             # Creating JWT token
             access_token = create_access_token(identity=user.id)
-            return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
+            return api_response(
+                status_code=200,
+                message='Login successfull',
+                data={'access_token': access_token}
+            )
         else:
-            return jsonify({'message': 'Incorrect email or password'}), 401
+            return api_response(
+                status_code=401,
+                message='Incorrect email or password',
+                data={}
+            )
     except Exception as e:
-        return jsonify({'message': 'Failed during login', 'error': str(e)}), 500
-    
+        return api_response(
+            status_code=500,
+            message='Failed during login',
+            data={'error': str(e)}
+        )
 
 @user_blueprint.route('/profile', methods=["GET"])
 @jwt_required()  # Membutuhkan token JWT untuk akses
@@ -116,7 +148,12 @@ def user_register():
     
     except SQLAlchemyError as e:
         # Mengembalikan pesan kesalahan jika ada kesalahan kueri basis data
-        return jsonify({'error': 'Failed to fetch user data', 'message': str(e)}), 500
+        # return jsonify({'error': 'Failed to fetch user data', 'message': str(e)}), 500
+        return api_response(
+            status_code=500,
+            message='Failed to fetch user data',
+            data={'error': str(e)}
+        )
 
     
 @user_blueprint.route('/edit', methods=["PUT"])
@@ -159,7 +196,7 @@ def update_profile():
         return api_response(
                 status_code=200,
                 message='User-data successfully updated',
-                data={'access_token': user_data}
+                data={'data_updated': user_data}
             )
 
         # # Mengembalikan pesan sukses
@@ -175,9 +212,8 @@ def update_profile():
 
 
 
-# -------------------->>>ADMIN -- ACCESS-------------->>>>>>
+# ->>--->>----->>>>>--ADMIN(Admin Only)-- ACCESS-->>--->>--->>>ADMIN(Admin Only)-- ACCESS----->>>----->>---->>>>>>
 
-# Admin Register
 @user_blueprint.route('/admin/register', methods=["POST"])
 def create_user_admin():
     data = request.get_json()
@@ -230,10 +266,20 @@ def create_user_admin():
         db.session.add(new_user)
         db.session.commit()
 
+        # Returning registration data
+        registration_admin = {
+            'id': new_user.id,
+            'email': new_user.email,
+            'name': new_user.name,
+            'role': new_user.role,
+            'created_at': new_user.created_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.created_at else None,
+            'updated_at': new_user.updated_at.strftime("%Y-%m-%d %H:%M:%S") if new_user.updated_at else None
+        }
+
         return api_response(
             status_code=201,
             message='User successfully added',
-            data={}
+            data={'data added': registration_admin}
         )
     except Exception as e:
         db.session.rollback()
@@ -271,8 +317,6 @@ def login_user_admin():
             data={'error': str(e)}
         )
     
-
-# Get All Users (Admin Only)
 @user_blueprint.route('/admin/users', methods=["GET"])
 @jwt_required()
 @role_required('admin')
@@ -296,7 +340,7 @@ def all_user_register():
         return api_response(
             status_code=200,
             message='User-Admin successfully access list all users',
-            data={'access_token': users_data}
+            data={'list_users': users_data}
         )
     
     except SQLAlchemyError as e:
