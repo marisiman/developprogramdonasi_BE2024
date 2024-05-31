@@ -20,6 +20,8 @@ load_dotenv()
 
 # Setting database URI directly
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 # Initializing database
 db.init_app(app)
