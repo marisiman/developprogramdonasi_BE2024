@@ -20,6 +20,15 @@ bcrypt = Bcrypt()
 # Registering a new user CUSTOMER-->>>>>
 @user_blueprint.route('/register', methods=["POST"])
 def create_user():
+
+    # Check if the Content-Type is application/json
+    if request.content_type != 'application/json':
+        return api_response(
+            status_code=400,
+            message='Content-Type must be application/json',
+            data={}
+        )
+    
     data = request.get_json()
 
     # Validate input data
