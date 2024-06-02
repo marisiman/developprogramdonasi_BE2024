@@ -34,7 +34,12 @@ def create_user():
     # Email format validation
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     if not re.match(email_regex, email):
-        return jsonify({'message': 'Invalid email format'}), 400
+        # return jsonify({'message': 'Invalid email format'}), 400
+        return api_response(
+                status_code=400,
+                message='Invalid email format',
+                data={}
+            )  
 
     # Password complexity validation
     if len(password) < 8:
@@ -44,7 +49,13 @@ def create_user():
         # Checking if the user already exists
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
-            return jsonify({'message': 'User already registered'}), 400
+            # return jsonify({'message': 'User already registered'}), 400
+            return api_response(
+                status_code=400,
+                message='User already registered',
+                data={}
+            )  
+
 
         # Encrypting password with bcrypt
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
