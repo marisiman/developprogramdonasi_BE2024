@@ -18,14 +18,12 @@ bcrypt = Bcrypt()
 # ----->>>> ACCESS USER CUSTOMER PAGE ---->>>>>>>
 
 # Registering a new user CUSTOMER-->>>>>
-
 @user_blueprint.route('/register', methods=["POST"])
 def create_user():
     data = request.get_json()
 
     # Validate input data
     if not data or not 'email' in data or not 'name' in data or not 'password' in data:
-        # return jsonify({'message': 'Missing required fields'}), 400
         return api_response(
             status_code=400,
             message='Missing required fields',
@@ -39,7 +37,6 @@ def create_user():
     # Email format validation
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     if not re.match(email_regex, email):
-        # return jsonify({'message': 'Invalid email format'}), 400
         return api_response(
                 status_code=400,
                 message='Invalid email format',
@@ -48,7 +45,6 @@ def create_user():
 
     # Password complexity validation
     if len(password) < 8:
-        # return jsonify({'message': 'Password must be at least 8 characters long'}), 400
         return api_response(
             status_code=400,
             message='Password must be at least 8 characters long',
@@ -59,7 +55,6 @@ def create_user():
         # Checking if the user already exists
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
-            # return jsonify({'message': 'User already registered'}), 400
             return api_response(
                 status_code=400,
                 message='User already registered',
@@ -96,11 +91,19 @@ def create_user():
             message='User-data successfully added',
             data={'user-data': registration_data}
         )
+    
+    except SQLAlchemyError as e:
+        db.session.rollback()  # Rollback the session in case of an error
+        return api_response(
+            status_code=500,
+            message='Failed to add user data',
+            data={'error': str(e)}
+        )
 
     except Exception as e:
         return api_response(
             status_code=500,
-            message='Failed to add user data',
+            message='An unexpected error occurred',
             data={'error': str(e)}
         )
 
