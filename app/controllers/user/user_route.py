@@ -25,7 +25,12 @@ def create_user():
 
     # Validate input data
     if not data or not 'email' in data or not 'name' in data or not 'password' in data:
-        return jsonify({'message': 'Missing required fields'}), 400
+        # return jsonify({'message': 'Missing required fields'}), 400
+        return api_response(
+            status_code=400,
+            message='Missing required fields',
+            data={}
+        )
 
     email = data['email']
     name = data['name']
@@ -43,7 +48,12 @@ def create_user():
 
     # Password complexity validation
     if len(password) < 8:
-        return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+        # return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+        return api_response(
+            status_code=400,
+            message='Password must be at least 8 characters long',
+            data={}
+        )
 
     try:
         # Checking if the user already exists
@@ -137,7 +147,12 @@ def user_register():
 
         # Memastikan pengguna ditemukan
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            # return jsonify({'error': 'User not found'}), 404
+            return api_response(
+                status_code=404,
+                message='User not found',
+                data={}
+            )
 
         # Mengonversi data pengguna ke format JSON
         user_data = {
@@ -179,7 +194,12 @@ def update_profile():
 
         # Memastikan pengguna ditemukan
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            # return jsonify({'error': 'User not found'}), 404
+            return api_response(
+                status_code=404,
+                message='User not found',
+                data={}
+            )
 
         # Mendapatkan data yang akan diubah dari permintaan
         data = request.json
