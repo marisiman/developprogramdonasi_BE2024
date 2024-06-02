@@ -1,5 +1,5 @@
 
-from flask import Blueprint, json, request, jsonify
+from flask import Blueprint, json, logging, request, jsonify
 from flask_bcrypt import Bcrypt
 from app.decorators.role_checker import role_required
 from app.models.user import User, db
@@ -20,7 +20,9 @@ bcrypt = Bcrypt()
 # Registering a new user CUSTOMER-->>>>>
 @user_blueprint.route('/register', methods=["POST"])
 def create_user():
-
+    logging.info(f"Content-Type: {request.content_type}")
+    logging.info(f"Request data: {request.data}")
+    
     # Check if the Content-Type is application/json
     if request.content_type != 'application/json':
         return api_response(
