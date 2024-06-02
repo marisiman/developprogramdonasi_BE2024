@@ -1,5 +1,5 @@
 
-from flask import Blueprint, json, logging, request, jsonify
+from flask import Blueprint, json, request, jsonify
 from flask_bcrypt import Bcrypt
 from app.decorators.role_checker import role_required
 from app.models.user import User, db
@@ -20,22 +20,11 @@ bcrypt = Bcrypt()
 # Registering a new user CUSTOMER-->>>>>
 @user_blueprint.route('/register', methods=["POST"])
 def create_user():
-    logging.info("Received a request to /register endpoint")
-
-    # Check if the Content-Type is application/json
-    if request.content_type != 'application/json':
-        logging.error("Invalid Content-Type")
-        return api_response(
-            status_code=400,
-            message='Content-Type must be application/json',
-            data={}
-        )
-
+    
     data = request.get_json()
-    logging.info(f"Request JSON data: {data}")
 
-    if not data or 'email' not in data or 'name' not in data or 'password' not in data:
-        logging.error("Missing required fields in the request")
+    # Validate input data
+    if not data or not 'email' in data or not 'name' in data or not 'password' in data:
         return api_response(
             status_code=400,
             message='Missing required fields',
@@ -49,16 +38,14 @@ def create_user():
     # Email format validation
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     if not re.match(email_regex, email):
-        logging.error("Invalid email format")
         return api_response(
-            status_code=400,
-            message='Invalid email format',
-            data={}
-        )
+                status_code=400,
+                message='Invalid email format',
+                data={}
+            )  
 
     # Password complexity validation
     if len(password) < 8:
-        logging.error("Password is too short")
         return api_response(
             status_code=400,
             message='Password must be at least 8 characters long',
@@ -69,16 +56,15 @@ def create_user():
         # Checking if the user already exists
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
-            logging.info("User already registered")
             return api_response(
                 status_code=400,
                 message='User already registered',
                 data={}
-            )
+            )  
+
 
         # Encrypting password with bcrypt
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        logging.info("Password hashed successfully")
 
         # Creating a new user
         new_user = User(
@@ -90,7 +76,6 @@ def create_user():
 
         db.session.add(new_user)
         db.session.commit()
-        logging.info("New user created and committed to the database")
 
         # Returning registration data
         registration_data = {
@@ -107,10 +92,9 @@ def create_user():
             message='User-data successfully added',
             data={'user-data': registration_data}
         )
-
+    
     except SQLAlchemyError as e:
-        db.session.rollback()
-        logging.error(f"SQLAlchemyError: {e}")
+        db.session.rollback()  # Rollback the session in case of an error
         return api_response(
             status_code=500,
             message='Failed to add user data',
@@ -118,7 +102,6 @@ def create_user():
         )
 
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
         return api_response(
             status_code=500,
             message='An unexpected error occurred',
