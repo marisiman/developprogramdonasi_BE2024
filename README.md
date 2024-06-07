@@ -10,6 +10,7 @@ Program Donasi is a backend application built using Flask to help manage users, 
 - **Donasi**: Add, view, update, and delete donasi.
 - **Authentication**: Uses JWT for user authentication.
 
+<img  src="/documentation/Program Donasi Database.png"> 
 
 ## My API
 
@@ -20,6 +21,7 @@ This API allows users to interact with our service to manage their profiles, aut
 ### Base URL
 
 The base URL for the API is: https://developprogramdonasi-be-2024.vercel.app
+
 
 
 ### Endpoints
