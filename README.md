@@ -17,11 +17,11 @@ Program Donasi is a backend application built using Flask to help manage users, 
     <p>Here is a screenshot of the application:</p>
     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
         <p><b>Login and Register Menu</b></p>
-        <img width="500" src="/documentation/Component 2 (1).png" alt="Component register">
+        <img src="/documentation/Component 2 (1).png" alt="Component register">
         <p><b>About and Contact Menu</b></p>
-        <img width="500" src="/documentation/Component about.png" alt="Component about">
+        <img src="/documentation/Component about.png" alt="Component about">
          <p><b>Program and Donate Menu</b></p>
-        <img width="500" src="/documentation/Componenet donate.png" alt="Component donate">
+        <img src="/documentation/Componenet donate.png" alt="Component donate">
     </div>
 
 #
