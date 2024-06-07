@@ -10,7 +10,28 @@ Program Donasi is a backend application built using Flask to help manage users, 
 - **Donasi**: Add, view, update, and delete donasi.
 - **Authentication**: Uses JWT for user authentication.
 
-<img  src="/documentation/Program Donasi Database.png"> 
+
+
+<h4>Web Display and Menu Flow</h4>
+   <img  src="/documentation/Content Planning.png">
+    <p>Here is a screenshot of the application:</p>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+        <p><b>Login and Register Menu</b></p>
+        <img width="300" src="/documentation/Component 2 (1).png" alt="Component register">
+        <p><b>About and Contact Menu</b></p>
+        <img width="300" src="/documentation/Component about.png" alt="Component about">
+         <p><b>Program and Donate Menu</b></p>
+        <img width="300" src="/documentation/Componenet donate.png" alt="Component donate">
+    </div>
+
+#
+<h4>Web Database and Relationship Flow</h4>
+    <p>Here is a screenshot of the relationship flow:</p>
+<div align="center">
+   <img width="500" src="/documentation/Program Donasi Database.png">
+</div>
+
+#
 
 ## My API
 
