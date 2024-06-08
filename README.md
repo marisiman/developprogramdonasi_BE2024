@@ -1,11 +1,12 @@
 # Program Donasi API (- BackEnd Section)
 
-Program Donasi is a backend application built using Flask to help manage users, program donasi, donatur and donasi in support of the DevelopProgramDonasi campaign.
+Program Donasi is a backend application built using Flask to help manage users, contact_us, program donasi, donatur and donasi in support of the DevelopProgramDonasi campaign.
 
 ## Features
 
 - **User**: Register, log in, update, and delete users.
-- **Program Donasi**: Add, update, and delete contacts.
+- **Contact_us**: Create messages and get list messages.
+- **Program Donasi**: Add, update, and delete programs.
 - **Donatur**: Add, view, update, and delete donature.
 - **Donasi**: Add, view, update, and delete donasi.
 - **Authentication**: Uses JWT for user authentication.
