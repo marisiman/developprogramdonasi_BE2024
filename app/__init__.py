@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from app.utils.db import db
 from app.controllers.user import user_route
+from app.controllers.contact_us import contactus_route
 # from app.controllers.contact_management_route import contact_routes
 # from app.controllers.donation_management_route import donation_routes
 from app.controllers.program import program_route
@@ -32,6 +33,7 @@ jwt = JWTManager(app)
 
 # Registering blueprints
 app.register_blueprint(user_route.user_blueprint, url_prefix='/user')
+app.register_blueprint(contactus_route.contactus_blueprint, url_prefix='/contact_us')
 app.register_blueprint(program_route.program_blueprint, url_prefix='/programs')
 app.register_blueprint(donatur_route.donatur_blueprint, url_prefix='/programs/donatur')
 app.register_blueprint(donasi_route.donasi_blueprint, url_prefix='/programs/donasi')
